@@ -25,7 +25,6 @@ const BookMeal = () => {
     setMessage({ type: '', text: '' });
     setLoading(true);
 
-    // Check if at least one meal is selected
     if (!meals.breakfast && !meals.lunch && !meals.snacks && !meals.dinner) {
       setMessage({ type: 'error', text: 'Please select at least one meal' });
       setLoading(false);
@@ -35,8 +34,6 @@ const BookMeal = () => {
     try {
       const { data } = await api.post('/student/book-tomorrow', { meals });
       setMessage({ type: 'success', text: data.message });
-      
-      // Redirect to dashboard after 2 seconds
       setTimeout(() => {
         navigate('/student/dashboard');
       }, 2000);
@@ -62,19 +59,25 @@ const BookMeal = () => {
   };
 
   return (
-    <div className="min-h-screen bg-pageBg">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-contentBg rounded-lg shadow-lg p-8 max-w-2xl mx-auto">
+        <div className="bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-2xl shadow-2xl p-8 max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-textDark">Book Meals for Tomorrow</h1>
-            <Link to="/student/dashboard" className="text-primary hover:underline">
-              ← Back
-            </Link>
+            <h1 className="text-3xl font-bold">Book Meals for Tomorrow</h1>
+            <div className="inline-block bg-white rounded px-4 py-2">
+              <Link
+                to="/student/dashboard"
+                className="text-orange-500 font-semibold hover:text-orange-600"
+              >
+                ← Back
+              </Link>
+            </div>
+
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-6">
+          <div className="bg-white/90 text-gray-800 px-4 py-3 rounded mb-6">
             <p className="font-semibold">Booking for: {getTomorrowDate()}</p>
             <p className="text-sm mt-1">Each meal costs 1 token. Tokens will be deducted immediately.</p>
           </div>
@@ -83,7 +86,7 @@ const BookMeal = () => {
             <div className={`px-4 py-3 rounded mb-6 ${
               message.type === 'success' 
                 ? 'bg-green-100 border border-green-400 text-green-700'
-                : 'bg-red-100 border border-accent text-accent'
+                : 'bg-red-100 border border-red-400 text-red-700'
             }`}>
               {message.text}
             </div>
@@ -91,87 +94,35 @@ const BookMeal = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-4 mb-6">
-              <div className="border-2 rounded-lg p-4 hover:border-primary transition">
-                <label className="flex items-center justify-between cursor-pointer">
+              {[
+                { key: 'breakfast', label: 'Breakfast', emoji: '🍳', tokens: user.tokens.breakfast },
+                { key: 'lunch', label: 'Lunch', emoji: '🍛', tokens: user.tokens.lunch },
+                { key: 'snacks', label: 'Snacks', emoji: '☕', tokens: user.tokens.snacks },
+                { key: 'dinner', label: 'Dinner', emoji: '🍽️', tokens: user.tokens.dinner },
+              ].map(meal => (
+                <div key={meal.key} className="bg-white rounded-xl p-4 flex items-center justify-between shadow hover:shadow-md transition">
                   <div className="flex items-center gap-4">
-                    <span className="text-3xl">🍳</span>
+                    <span className="text-3xl">{meal.emoji}</span>
                     <div>
-                      <p className="font-bold text-lg text-textDark">Breakfast</p>
-                      <p className="text-sm text-gray-600">Available tokens: {user.tokens.breakfast}</p>
+                      <p className="font-bold text-lg text-gray-800">{meal.label}</p>
+                      <p className="text-sm text-gray-500">Available tokens: {meal.tokens}</p>
                     </div>
                   </div>
                   <input
                     type="checkbox"
-                    checked={meals.breakfast}
-                    onChange={() => handleCheckbox('breakfast')}
-                    className="w-6 h-6 accent-primary"
-                    disabled={user.tokens.breakfast === 0}
+                    checked={meals[meal.key]}
+                    onChange={() => handleCheckbox(meal.key)}
+                    className="w-6 h-6 accent-orange-500"
+                    disabled={meal.tokens === 0}
                   />
-                </label>
-              </div>
-
-              <div className="border-2 rounded-lg p-4 hover:border-primary transition">
-                <label className="flex items-center justify-between cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <span className="text-3xl">🍛</span>
-                    <div>
-                      <p className="font-bold text-lg text-textDark">Lunch</p>
-                      <p className="text-sm text-gray-600">Available tokens: {user.tokens.lunch}</p>
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={meals.lunch}
-                    onChange={() => handleCheckbox('lunch')}
-                    className="w-6 h-6 accent-primary"
-                    disabled={user.tokens.lunch === 0}
-                  />
-                </label>
-              </div>
-
-              <div className="border-2 rounded-lg p-4 hover:border-primary transition">
-                <label className="flex items-center justify-between cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <span className="text-3xl">☕</span>
-                    <div>
-                      <p className="font-bold text-lg text-textDark">Snacks</p>
-                      <p className="text-sm text-gray-600">Available tokens: {user.tokens.snacks}</p>
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={meals.snacks}
-                    onChange={() => handleCheckbox('snacks')}
-                    className="w-6 h-6 accent-primary"
-                    disabled={user.tokens.snacks === 0}
-                  />
-                </label>
-              </div>
-
-              <div className="border-2 rounded-lg p-4 hover:border-primary transition">
-                <label className="flex items-center justify-between cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <span className="text-3xl">🍽️</span>
-                    <div>
-                      <p className="font-bold text-lg text-textDark">Dinner</p>
-                      <p className="text-sm text-gray-600">Available tokens: {user.tokens.dinner}</p>
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={meals.dinner}
-                    onChange={() => handleCheckbox('dinner')}
-                    className="w-6 h-6 accent-primary"
-                    disabled={user.tokens.dinner === 0}
-                  />
-                </label>
-              </div>
+                </div>
+              ))}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-textLight py-3 rounded hover:bg-opacity-90 transition disabled:opacity-50"
+              className="w-full bg-white text-orange-500 border border-orange-500 py-3 rounded-lg hover:bg-orange-50 transition font-semibold disabled:opacity-50"
             >
               {loading ? 'Booking...' : 'Confirm Booking'}
             </button>

@@ -1,16 +1,12 @@
-import { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import { Shield } from "lucide-react";
 
 const AdminLogin = () => {
-  const [formData, setFormData] = useState({
-    rollNo: '',
-    password: ''
-  });
-
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({ rollNo: "", password: "" });
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -20,69 +16,151 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
-
     try {
-      const userData = await login(formData.rollNo, formData.password);
-      
-      navigate('/admin/dashboard');
+      await login(formData.rollNo, formData.password);
+      navigate("/admin/dashboard");
     } catch (err) {
-      setError('Invalid Admin UniqueId or password');
+      setError("Invalid Admin UniqueID or password");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-pageBg flex items-center justify-center px-4">
-      <div className="bg-contentBg p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold text-primary mb-6 text-center">
-          NITR Mess Plus
-        </h1>
-        <h2 className="text-xl text-textDark mb-6 text-center">Admin Login</h2>
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{
+        background: "linear-gradient(135deg, #f4f6f9 0%, #e8ecf1 100%)",
+        fontFamily: "Segoe UI, Roboto, sans-serif",
+        color: "#333333",
+      }}
+    >
+      <div
+        className="relative bg-white/95 p-10 rounded-2xl shadow-2xl w-full max-w-md backdrop-blur-md border"
+        style={{
+          borderColor: "#f0f0f0",
+          transition: "all 0.3s ease",
+        }}
+      >
+        {/* Logo / Header */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div
+              className="p-3 rounded-full shadow-md"
+              style={{
+                background: "linear-gradient(135deg, #b95c40, #3c5a98)",
+              }}
+            >
+              <Shield className="h-8 w-8 text-white" />
+            </div>
+          </div>
+          <h1
+            className="text-3xl font-extrabold tracking-tight mb-1"
+            style={{
+              background: "linear-gradient(90deg, #b95c40, #3c5a98)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            NITR Mess Plus
+          </h1>
+          <p className="text-base text-gray-600 font-medium">Admin Login</p>
+        </div>
 
+        {/* Error Alert */}
         {error && (
-          <div className="bg-red-100 border border-accent text-accent px-4 py-3 rounded mb-4">
+          <div
+            className="mb-5 px-4 py-3 rounded-lg text-sm font-medium border"
+            style={{
+              color: "#E53935",
+              backgroundColor: "#ffeaea",
+              borderColor: "#E53935",
+            }}
+          >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-textDark mb-2">Admin UniqueID</label>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="rollNo"
+              className="block mb-2 text-sm font-semibold"
+              style={{ color: "#333333" }}
+            >
+              Admin Unique ID
+            </label>
             <input
+              id="rollNo"
               type="text"
               name="rollNo"
               value={formData.rollNo}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-primary"
-              required
               placeholder="Admin@123"
+              required
+              className="w-full px-4 py-3 rounded-lg border focus:outline-none transition-all"
+              style={{
+                borderColor: "#ccc",
+                backgroundColor: "#fff",
+              }}
+              onFocus={(e) =>
+                (e.target.style.borderColor = "#b95c40")
+              }
+              onBlur={(e) => (e.target.style.borderColor = "#ccc")}
             />
           </div>
 
-          <div className="mb-6">
-            <label className="block text-textDark mb-2">Password</label>
+          <div>
+            <label
+              htmlFor="password"
+              className="block mb-2 text-sm font-semibold"
+              style={{ color: "#333333" }}
+            >
+              Password
+            </label>
             <input
+              id="password"
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-primary"
-              placeholder='password'
+              placeholder="••••••••"
               required
+              className="w-full px-4 py-3 rounded-lg border focus:outline-none transition-all"
+              style={{
+                borderColor: "#ccc",
+                backgroundColor: "#fff",
+              }}
+              onFocus={(e) =>
+                (e.target.style.borderColor = "#b95c40")
+              }
+              onBlur={(e) => (e.target.style.borderColor = "#ccc")}
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary text-textLight py-3 rounded hover:bg-opacity-90 transition disabled:opacity-50"
+            className="w-full py-3 rounded-lg font-semibold text-lg transition-all shadow-md hover:shadow-lg"
+            style={{
+              background: "linear-gradient(90deg, #b95c40, #3c5a98)",
+              color: "#fff",
+              opacity: loading ? 0.8 : 1,
+            }}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        {/* Footer */}
+        <div className="text-center mt-6">
+          <p className="text-sm text-gray-500">
+            © {new Date().getFullYear()} National Institute of Technology, Rourkela
+          </p>
+        </div>
       </div>
     </div>
   );

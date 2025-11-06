@@ -24,86 +24,65 @@ const ViewTokens = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-pageBg">
+      <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="container mx-auto px-4 py-8 text-center">
-          <p className="text-xl">Loading...</p>
+          <p className="text-xl text-orange-500 font-semibold animate-pulse">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-pageBg">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-contentBg rounded-lg shadow-lg p-8">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-textDark">Your Meal Tokens</h1>
-            <Link to="/student/dashboard" className="text-primary hover:underline">
-              ← Back to Dashboard
-            </Link>
-          </div>
 
-          <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-6">
-            <p>Tokens reset to 15 for each meal on the 1st of every month.</p>
+      <div className="container mx-auto px-4 py-8">
+        {/* Main Card */}
+        <div className="bg-gradient-to-r from-orange-400 to-orange-600 text-white rounded-2xl shadow-2xl p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold">Your Meal Tokens</h1>
+            <div className="inline-block bg-white rounded px-4 py-2 shadow hover:shadow-md transition">
+              <Link
+                to="/student/dashboard"
+                className="text-orange-500 font-semibold hover:text-orange-600"
+              >
+                ← Back to Dashboard
+              </Link>
+            </div>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="border-2 border-primary rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-textDark">Breakfast</h2>
-                <span className="text-4xl">🍳</span>
+            {[
+              { label: 'Breakfast', emoji: '🍳', count: tokens.breakfast },
+              { label: 'Lunch', emoji: '🍛', count: tokens.lunch },
+              { label: 'Snacks', emoji: '☕', count: tokens.snacks },
+              { label: 'Dinner', emoji: '🍽️', count: tokens.dinner },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="bg-white rounded-xl p-6 shadow-md flex flex-col items-center transition hover:scale-105"
+              >
+                <div className="flex items-center justify-between w-full mb-4">
+                  <h2 className="text-2xl font-bold text-gray-800">{item.label}</h2>
+                  <span className="text-3xl">{item.emoji}</span>
+                </div>
+                <p className="text-5xl font-bold text-orange-500">{item.count}</p>
+                <p className="text-gray-500 mt-2 text-center">tokens remaining</p>
               </div>
-              <p className="text-5xl font-bold text-primary text-center">
-                {tokens.breakfast}
-              </p>
-              <p className="text-center text-gray-600 mt-2">tokens remaining</p>
-            </div>
-
-            <div className="border-2 border-primary rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-textDark">Lunch</h2>
-                <span className="text-4xl">🍛</span>
-              </div>
-              <p className="text-5xl font-bold text-primary text-center">
-                {tokens.lunch}
-              </p>
-              <p className="text-center text-gray-600 mt-2">tokens remaining</p>
-            </div>
-
-            <div className="border-2 border-primary rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-textDark">Snacks</h2>
-                <span className="text-4xl">☕</span>
-              </div>
-              <p className="text-5xl font-bold text-primary text-center">
-                {tokens.snacks}
-              </p>
-              <p className="text-center text-gray-600 mt-2">tokens remaining</p>
-            </div>
-
-            <div className="border-2 border-primary rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-textDark">Dinner</h2>
-                <span className="text-4xl">🍽️</span>
-              </div>
-              <p className="text-5xl font-bold text-primary text-center">
-                {tokens.dinner}
-              </p>
-              <p className="text-center text-gray-600 mt-2">tokens remaining</p>
-            </div>
+            ))}
           </div>
 
-          <div className="mt-8 text-center">
-            <Link
-              to="/book-meal"
-              className="inline-block bg-primary text-textLight px-8 py-3 rounded hover:bg-opacity-90 transition"
-            >
-              Book Meals for Tomorrow
-            </Link>
-          </div>
+<div className="mt-8 text-center">
+  <Link
+    to="/book-meal"
+    className="inline-block bg-white text-orange-500 border border-orange-500 px-8 py-3 rounded-lg hover:bg-orange-50 transition font-semibold"
+  >
+    Book Meals for Tomorrow
+  </Link>
+</div>
+
         </div>
       </div>
     </div>

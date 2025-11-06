@@ -4,7 +4,7 @@ import api from '../../utils/api';
 
 const AdminDashboard = () => {
   const [selectedMeal, setSelectedMeal] = useState('breakfast');
-  const [selectedDayTab, setSelectedDayTab] = useState('today'); // 'today' | 'tomorrow'
+  const [selectedDayTab, setSelectedDayTab] = useState('today');
   const [studentData, setStudentData] = useState({ today: [], yesterday: [] });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -16,13 +16,11 @@ const AdminDashboard = () => {
     { value: 'dinner', label: 'Dinner', icon: '🍽️' }
   ];
 
-  // 🔹 Fetch today's & yesterday's unverified meal bookings
   const fetchMealList = async (meal) => {
     setLoading(true);
     setMessage({ type: '', text: '' });
     try {
       const { data } = await api.get(`/admin/meal-list?meal=${meal}`);
-      // Expect backend to return: { today: { students: [] }, yesterday: { students: [] } }
       setStudentData({
         yesterday: data.yesterday?.students || [],
         today: data.today?.students || []
@@ -41,22 +39,13 @@ const AdminDashboard = () => {
     fetchMealList(selectedMeal);
   }, [selectedMeal]);
 
-  // 🔹 Verify meal booking
   const handleVerify = async (bookingId, dayKey) => {
     try {
-      await api.put('/admin/verify-meal', {
-        bookingId,
-        meal: selectedMeal
-      });
-
-      // Remove verified student from the correct day's list
-      setStudentData((prev) => ({
+      await api.put('/admin/verify-meal', { bookingId, meal: selectedMeal });
+      setStudentData(prev => ({
         ...prev,
-        [dayKey]: prev[dayKey].filter(
-          (student) => student.bookingId !== bookingId
-        )
+        [dayKey]: prev[dayKey].filter(s => s.bookingId !== bookingId)
       }));
-
       setMessage({ type: 'success', text: 'Meal verified successfully' });
       setTimeout(() => setMessage({ type: '', text: '' }), 2000);
     } catch (error) {
@@ -78,44 +67,42 @@ const AdminDashboard = () => {
     });
   };
 
-  // 🔹 Reusable student list renderer
   const renderStudentList = (students, title, dayKey, showVerify) => (
-    <div className="bg-pageBg p-4 rounded mb-6">
-      <h2 className="text-xl font-bold text-secondary mb-4">
-        {title}
-        <span className="ml-2 text-sm font-normal text-gray-600">
+    <div className="bg-gradient-to-b from-orange-50 to-amber-50 p-4 rounded-lg mb-6 shadow-md">
+      <h2 className="text-xl font-bold text-orange-800 mb-4 text-center">
+        {title}{' '}
+        <span className="text-gray-600 font-normal text-sm">
           ({students.length} students)
         </span>
       </h2>
-
       {students.length === 0 ? (
         <p className="text-center py-8 text-gray-600">
           No unverified bookings for this day
         </p>
       ) : (
-        <div className="space-y-3">
-          {students.map((student) => (
+        <div className="space-y-4">
+          {students.map(student => (
             <div
               key={student.bookingId}
-              className="bg-contentBg p-4 rounded-lg shadow flex items-center justify-between"
+              className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between transition hover:shadow-lg"
             >
               <div className="flex items-center gap-4">
                 {student.photoURL ? (
                   <img
                     src={student.photoURL}
                     alt={student.name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+                    className="w-16 h-16 rounded-full object-cover border-2 border-orange-400"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-textLight text-xl font-bold">
+                  <div className="w-16 h-16 rounded-full bg-orange-400 flex items-center justify-center text-white text-xl font-bold">
                     {student.name.charAt(0)}
                   </div>
                 )}
 
                 <div>
-                  <p className="font-bold text-lg text-textDark">{student.name}</p>
-                  <p className="text-gray-600">Roll No: {student.rollNo}</p>
-                  <p className="text-gray-600 text-sm">Mess: GDB</p>
+                  <p className="font-bold text-lg text-gray-800">{student.name}</p>
+                  <p className="text-gray-500">Roll No: {student.rollNo}</p>
+                  <p className="text-gray-500 text-sm">Mess: GDB</p>
                 </div>
               </div>
 
@@ -135,97 +122,88 @@ const AdminDashboard = () => {
     </div>
   );
 
-  // 🔹 Determine which list to show
   const getActiveList = () => {
     if (selectedDayTab === 'today') {
-      // Meals booked yesterday → served today
       return renderStudentList(
         studentData.yesterday,
         `Meals for Today (${formatDate(0)})`,
         'yesterday',
-        true // show verify button
+        true
       );
     } else {
-      // Meals booked today → for tomorrow
       return renderStudentList(
         studentData.today,
         `Meals for Tomorrow (${formatDate(1)})`,
         'today',
-        false // hide verify button
+        false
       );
     }
   };
 
   return (
-    <div className="min-h-screen bg-pageBg">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-contentBg rounded-lg shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-textDark mb-2">
+      <div className="container mx-auto px-4 py-10">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          {/* Header */}
+          <h1 className="text-4xl font-bold text-gray-800 mb-2 text-center">
             Admin Verification Panel
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-center text-gray-500 mb-6">
             Date: {selectedDayTab === 'today' ? formatDate(0) : formatDate(1)}
           </p>
 
-          {/* Messages */}
+          {/* Message */}
           {message.text && (
-            <div
-              className={`px-4 py-3 rounded mb-6 ${
-                message.type === 'success'
-                  ? 'bg-green-100 border border-green-400 text-green-700'
-                  : 'bg-red-100 border border-accent text-accent'
-              }`}
-            >
+            <div className={`px-4 py-3 rounded mb-6 text-center ${
+              message.type === 'success'
+                ? 'bg-green-100 border border-green-400 text-green-700'
+                : 'bg-red-100 border border-red-400 text-red-700'
+            }`}>
               {message.text}
             </div>
           )}
 
-          {/* 🔹 Day Tabs */}
-          <div className="flex gap-2 mb-6 flex-wrap">
-            <button
-              onClick={() => setSelectedDayTab('today')}
-              className={`px-6 py-3 rounded font-semibold transition ${
-                selectedDayTab === 'today'
-                  ? 'bg-primary text-textLight'
-                  : 'bg-gray-200 text-textDark hover:bg-gray-300'
-              }`}
-            >
-              Meals for Today
-            </button>
-            <button
-              onClick={() => setSelectedDayTab('tomorrow')}
-              className={`px-6 py-3 rounded font-semibold transition ${
-                selectedDayTab === 'tomorrow'
-                  ? 'bg-primary text-textLight'
-                  : 'bg-gray-200 text-textDark hover:bg-gray-300'
-              }`}
-            >
-              Meals for Tomorrow
-            </button>
+          {/* Day Tabs */}
+          <div className="flex justify-center gap-4 mb-6 flex-wrap">
+            {['today', 'tomorrow'].map(day => (
+              <button
+                key={day}
+                onClick={() => setSelectedDayTab(day)}
+                className={`px-10 py-4 rounded-lg font-semibold text-lg transition ${
+                  selectedDayTab === day
+                    ? 'bg-orange-500 text-white shadow-md'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {day === 'today' ? 'Meals for Today' : 'Meals for Tomorrow'}
+              </button>
+            ))}
           </div>
 
-          {/* 🔹 Meal Selection Tabs */}
-          <div className="flex gap-2 mb-6 flex-wrap">
-            {meals.map((meal) => (
+          {/* Meal Tabs */}
+          <div className="flex justify-center gap-4 mb-6 flex-wrap">
+            {meals.map(meal => (
               <button
                 key={meal.value}
                 onClick={() => setSelectedMeal(meal.value)}
-                className={`px-6 py-3 rounded font-semibold transition ${
+                className={`px-8 py-4 rounded-lg font-semibold text-lg transition flex items-center justify-center gap-2 ${
                   selectedMeal === meal.value
-                    ? 'bg-primary text-textLight'
-                    : 'bg-gray-200 text-textDark hover:bg-gray-300'
+                    ? 'bg-orange-400 text-white shadow-md'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
+                style={{ minWidth: '160px' }}
               >
-                <span className="mr-2">{meal.icon}</span>
+                <span>{meal.icon}</span>
                 {meal.label}
               </button>
             ))}
           </div>
 
+          {/* Student List */}
           {loading ? (
-            <p className="text-center py-8 text-gray-600">Loading...</p>
+            <p className="text-center py-8 text-gray-500">Loading...</p>
           ) : (
             getActiveList()
           )}

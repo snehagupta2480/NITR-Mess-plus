@@ -15,7 +15,7 @@ const Navbar = () => {
     <nav className="bg-primary text-textLight shadow-md">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to={user?.role === 'admin' ? '/admin' : '/dashboard'} className="text-2xl font-bold">
+          <Link to={user?.role === 'admin' ? '/admin/dashboard' : '/student/dashboard'} className="text-2xl font-bold">
             NITR Mess Plus
           </Link>
           
