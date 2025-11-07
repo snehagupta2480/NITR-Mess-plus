@@ -60,9 +60,9 @@ const LandingPage = () => {
                 className="text-lg leading-relaxed max-w-xl"
                 style={{ color: "#555555" }}
               >
-                Manage meals, view records, and stay updated — all in one secure
+                Manage meals, view records,and stay updated — All in one secure
                 and seamless platform designed for NIT Rourkela students and
-                administrators.
+                Administrators.
               </p>
             </div>
 
