@@ -1,19 +1,38 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import Navbar from "../../components/Navbar";
 import { ClipboardList, Ticket, Utensils } from "lucide-react";
 
 const Dashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { user, fetchUserData } = useContext(AuthContext); 
+  // 👆 assuming AuthContext provides a method to re-fetch user data
+  const [refresh, setRefresh] = useState(false);
 
-  // Updated gradient colors based on #C46243
+  // Updated gradients & accents based on #B95C40
   const TOKEN_COLORS = {
-    Breakfast: "from-[#E17C5D] to-[#C46243]",
-    Lunch: "from-[#E17C5D] to-[#C46243]",
-    Snacks: "from-[#E17C5D] to-[#C46243]",
-    Dinner: "from-[#E17C5D] to-[#C46243]",
+    Breakfast: "from-[#D26F51] to-[#B95C40]",
+    Lunch: "from-[#D26F51] to-[#B95C40]",
+    Snacks: "from-[#D26F51] to-[#B95C40]",
+    Dinner: "from-[#D26F51] to-[#B95C40]",
   };
+
+  // ✅ useEffect to auto-refresh dashboard data after booking
+  useEffect(() => {
+    if (refresh) {
+      fetchUserData(); // refetch user token info
+      setRefresh(false);
+    }
+  }, [refresh, fetchUserData]);
+
+  // ✅ Trigger refresh when returning from booking page
+  useEffect(() => {
+    const hasBooked = localStorage.getItem("mealBooked");
+    if (hasBooked) {
+      setRefresh(true);
+      localStorage.removeItem("mealBooked");
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
@@ -21,7 +40,7 @@ const Dashboard = () => {
 
       <div className="container mx-auto px-6 py-10">
         {/* Profile Card */}
-        <div className="bg-gradient-to-r from-[#E17C5D] to-[#C46243] text-white rounded-2xl shadow-2xl p-8 mb-10 flex items-center gap-6 border border-[#E17C5D] transform transition hover:scale-105">
+        <div className="bg-gradient-to-r from-[#D26F51] to-[#B95C40] text-white rounded-2xl shadow-2xl p-8 mb-10 flex items-center gap-6 border border-[#D26F51] transform transition hover:scale-105">
           {user.photoURL ? (
             <img
               src={user.photoURL}
@@ -29,7 +48,7 @@ const Dashboard = () => {
               className="w-24 h-24 rounded-full object-cover border-4 border-white"
             />
           ) : (
-            <div className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold bg-gradient-to-r from-[#E17C5D] to-[#C46243]">
+            <div className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold bg-gradient-to-r from-[#D26F51] to-[#B95C40]">
               {user.name.charAt(0).toUpperCase()}
             </div>
           )}
@@ -50,7 +69,7 @@ const Dashboard = () => {
             className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition transform hover:-translate-y-1"
           >
             <div className="text-center">
-              <ClipboardList className="mx-auto h-12 w-12 mb-4 text-[#C46243]" />
+              <ClipboardList className="mx-auto h-12 w-12 mb-4 text-[#B95C40]" />
               <h2 className="text-xl font-bold mb-1 text-gray-800">
                 View Mess Menu
               </h2>
@@ -63,7 +82,7 @@ const Dashboard = () => {
             className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition transform hover:-translate-y-1"
           >
             <div className="text-center">
-              <Ticket className="mx-auto h-12 w-12 mb-4 text-[#C46243]" />
+              <Ticket className="mx-auto h-12 w-12 mb-4 text-[#B95C40]" />
               <h2 className="text-xl font-bold mb-1 text-gray-800">
                 Check Current Tokens
               </h2>
@@ -74,9 +93,10 @@ const Dashboard = () => {
           <Link
             to="/book-meal"
             className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition transform hover:-translate-y-1"
+            onClick={() => localStorage.setItem("mealBooked", "true")}
           >
             <div className="text-center">
-              <Utensils className="mx-auto h-12 w-12 mb-4 text-[#C46243]" />
+              <Utensils className="mx-auto h-12 w-12 mb-4 text-[#B95C40]" />
               <h2 className="text-xl font-bold mb-1 text-gray-800">
                 Book Meal Coupons
               </h2>
