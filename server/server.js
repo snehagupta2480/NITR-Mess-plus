@@ -17,7 +17,7 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Vite's default port
+  origin: 'https://nitr-mess-plus.vercel.app', // Vite's default port
   credentials: true
 }));
 app.use(express.json());
