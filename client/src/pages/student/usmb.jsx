@@ -1,21 +1,20 @@
 import { useState } from "react";
 
-export default function useMealBooking() {
-  const [isBooking, setIsBooking] = useState(false);
-  const [mealBooked, setMealBooked] = useState(false);
+export default function useMealReserve() {
+  const [isReserving, setIsReserving] = useState(false);
+  const [mealReserved, setMealReserved] = useState(false);
 
-  const handleBookMeal = async () => {
-    setIsBooking(true);
+  const handleReserveMeal = async () => {
+    setIsReserving(true);
     try {
-      // Simulate network call
       await new Promise((resolve) => setTimeout(resolve, 800));
-      setMealBooked(true);
+      setMealReserved(true);
     } catch (err) {
-      console.error("Booking failed", err);
+      console.error("Reservation failed:", err);
     } finally {
-      setIsBooking(false);
+      setIsReserving(false);
     }
   };
 
-  return { isBooking, mealBooked, handleBookMeal };
+  return { isReserving, mealReserved, handleReserveMeal };
 }
